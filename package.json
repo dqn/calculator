@@ -1,0 +1,21 @@
+{
+  "name": "calc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "calc.js",
+  "scripts": {
+    "test": "./test.sh",
+    "clean": "rm -f calc *.o *~ tmp*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyalloc/calculator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nyalloc/calculator/issues"
+  },
+  "homepage": "https://github.com/nyalloc/calculator#readme"
+}

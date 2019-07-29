@@ -11,6 +11,37 @@ const printTree = (node, depth=0) => {
   printTree(node.right, depth + 1);
 };
 
+const printAssembly = node => {
+  if (isNumber(node.value)) {
+    console.log(`  push ${node.value}`);
+    return
+  }
+
+  printAssembly(node.left)
+  printAssembly(node.right);
+
+  console.log('  pop rdi');
+  console.log('  pop rax');
+
+  switch (node.value) {
+    case '+':
+      console.log('  add rax, rdi');
+      break;
+    case '-':
+      console.log('  sub rax, rdi');
+      break;
+    case '*':
+      console.log('  imul rax, rdi');
+      break;
+    case '/':
+      console.log('  cqo');
+      console.log('  idiv rdi');
+      break;
+  }
+
+  console.log('  push rax');
+};
+
 const calcTree = node => {
   if (isNumber(node.value)) {
     return Number(node.value);
@@ -33,6 +64,9 @@ const makeNode = (value, left, right) => ({
 const isNumber = text =>
   text.split('').every(c => '0123456789'.includes(c));
 
+const isSpace = c =>
+  (c === ' ');
+
 const tokenize = text => {
   const tokens = [];
   let temp = '';
@@ -40,6 +74,9 @@ const tokenize = text => {
   for (const c of text) {
     if (isNumber(c)) {
       temp += c;
+      continue;
+    }
+    if (isSpace(c)) {
       continue;
     }
     tokens.push(temp);
@@ -93,14 +130,27 @@ const expr = tokens => {
 
 const execute = text => {
   const tokens = tokenize(text);
+
+  // console.log(tokens);
+
   const root = expr(tokens);
+
+  console.log('.intel_syntax noprefix');
+  console.log('.global main');
+  console.log('  main:');
+
+  printAssembly(root);
+
+  console.log('  pop rax');
+  console.log('  ret');
+
   // printTree(root);
-  console.log(calcTree(root));
+  // console.log(calcTree(root));
 };
 
 const main = argv => {
   if (argv.length !== 3) {
-    console.error('Usage: node main.js <expression>');
+    console.error('Usage: node calc.js <expression>');
     return 1;
   }
 

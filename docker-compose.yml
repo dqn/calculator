@@ -1,0 +1,8 @@
+version: "3"
+services:
+  calc:
+    build: .
+    volumes:
+      - .:/var/lib/calc
+    working_dir: /var/lib/calc
+    tty: true
