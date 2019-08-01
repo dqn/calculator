@@ -3,8 +3,18 @@
 const isNumber = c =>
 	/\d+/.test(c);
 
-const isBlank = c =>
-	(c === ' ');
+const isSpace = c =>
+  (c === ' ');
+
+const isOperator = c =>
+	/[\+\-\*\/]/.test(c);
+
+const consume = (tokens, expect) => {
+  if (tokens[0] !== expect) {
+    throw new Error(`${expect} expected, but got ${tokens[0]}.`)
+  }
+  tokens.shift();
+};
 
 const tokenize = string => {
 	let temp = '';
@@ -14,18 +24,26 @@ const tokenize = string => {
 			temp += c;
 			continue;
 		}
-		if (isBlank(c)) {
+		if (isSpace(c)) {
 			continue;
-		}
-		tokens.push(temp);
-		tokens.push(c);
-		temp = '';
+    }
+    if (temp) {
+      tokens.push(temp);
+      temp = '';
+    }
+    tokens.push(c);
 	}
 	return [...tokens, temp];
 };
 
 const number = tokens => {
-	return { value: Number(tokens.shift()) };
+  if (isNumber(tokens[0])) {
+    return { value: Number(tokens.shift()) };
+  }
+  consume(tokens, '(');
+  const node = expression(tokens);
+  consume(tokens, ')');
+  return node;
 };
 
 const term = tokens => {
@@ -81,7 +99,9 @@ const printAssembly = node => {
 		case '/':
 			console.log('  cqo')
 			console.log(`  idiv rdi`);
-			break;
+      break;
+    default:
+      throw new Error(`Unknown value ${node.value}.`);
 	}
 
 	console.log('  push rax');
