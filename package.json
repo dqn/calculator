@@ -5,7 +5,7 @@
   "main": "calc.js",
   "scripts": {
     "test": "./test.sh",
-    "clean": "rm -f calc *.o *~ tmp*"
+    "clean": "rm -f calc tmp*"
   },
   "repository": {
     "type": "git",
