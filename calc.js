@@ -1,13 +1,13 @@
-'use strct'
+'use strict'
 
 const isNumber = c =>
-	/\d+/.test(c);
+  /\d+/.test(c);
 
 const isSpace = c =>
   (c === ' ');
 
 const isOperator = c =>
-	/[\+\-\*\/]/.test(c);
+  /[\+\-\*\/]/.test(c);
 
 const consume = (tokens, expect) => {
   if (tokens[0] !== expect) {
@@ -17,23 +17,23 @@ const consume = (tokens, expect) => {
 };
 
 const tokenize = string => {
-	let temp = '';
-	const tokens = [];
-	for (const c of string) {
-		if (isNumber(c)) {
-			temp += c;
-			continue;
-		}
-		if (isSpace(c)) {
-			continue;
+  let temp = '';
+  const tokens = [];
+  for (const c of string) {
+    if (isNumber(c)) {
+      temp += c;
+      continue;
+    }
+    if (isSpace(c)) {
+      continue;
     }
     if (temp) {
       tokens.push(temp);
       temp = '';
     }
     tokens.push(c);
-	}
-	return [...tokens, temp];
+  }
+  return [...tokens, temp];
 };
 
 const number = tokens => {
@@ -47,80 +47,80 @@ const number = tokens => {
 };
 
 const term = tokens => {
-	let node = number(tokens);
-	while (true) {
-		switch (tokens[0]) {
-		case '*':
-		case '/':
-			node = { value: tokens.shift(), left: node, right: number(tokens) };
-			break;
-		default:
-			return node;
-		}
-	}
+  let node = number(tokens);
+  while (true) {
+    switch (tokens[0]) {
+    case '*':
+    case '/':
+      node = { value: tokens.shift(), left: node, right: number(tokens) };
+      break;
+    default:
+      return node;
+    }
+  }
 };
 
 const expression = tokens => {
-	let node = term(tokens);
-	while (true) {
-		switch (tokens[0]) {
-		case '+':
-		case '-':
-			node = { value: tokens.shift(), left: node, right: term(tokens) };
-			break;
-		default:
-			return node;
-		}
-	}
+  let node = term(tokens);
+  while (true) {
+    switch (tokens[0]) {
+    case '+':
+    case '-':
+      node = { value: tokens.shift(), left: node, right: term(tokens) };
+      break;
+    default:
+      return node;
+    }
+  }
 };
 
 const printAssembly = node => {
-	if (!node.left || !node.right) {
-		console.log(`  push ${node.value}`);
-		return
-	}
+  if (!node.left || !node.right) {
+    console.log(`  push ${node.value}`);
+    return
+  }
 
-	printAssembly(node.left);
-	printAssembly(node.right);
+  printAssembly(node.left);
+  printAssembly(node.right);
 
-	console.log(`  pop rdi`);
-	console.log(`  pop rax`);
+  console.log(`  pop rdi`);
+  console.log(`  pop rax`);
 
-	switch (node.value) {
-		case '+':
-			console.log(`  add rax, rdi`);
-			break;
-		case '-':
-			console.log(`  sub rax, rdi`);
-			break;
-		case '*':
-			console.log(`  imul rax, rdi`);
-			break;
-		case '/':
-			console.log('  cqo')
-			console.log(`  idiv rdi`);
+  switch (node.value) {
+    case '+':
+      console.log(`  add rax, rdi`);
+      break;
+    case '-':
+      console.log(`  sub rax, rdi`);
+      break;
+    case '*':
+      console.log(`  imul rax, rdi`);
+      break;
+    case '/':
+      console.log('  cqo')
+      console.log(`  idiv rdi`);
       break;
     default:
       throw new Error(`Unknown value ${node.value}.`);
-	}
+  }
 
-	console.log('  push rax');
+  console.log('  push rax');
 };
 
 const main = argv => {
-	const tokens = tokenize(argv[2]);
-	const node = expression(tokens);
+  const tokens = tokenize(argv[2]);
+  const node = expression(tokens);
 
-	console.log('.intel_syntax noprefix');
-	console.log('.global main');
-	console.log('main:');
+  console.log('.intel_syntax noprefix');
+  console.log('.global main');
+  console.log('main:');
 
-	printAssembly(node);
+  printAssembly(node);
 
-	console.log('  pop rax');
-	console.log('  ret');
+  console.log('  pop rax');
+  console.log('  ret');
 };
 
 if (require.main === module) {
-	main(process.argv);
+  main(process.argv);
 }
