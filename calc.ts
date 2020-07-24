@@ -1,25 +1,32 @@
-'use strict'
-
-const isNumber = c =>
-  /\d+/.test(c);
-
-const isSpace = c =>
-  (c === ' ');
-
-const isOperator = c =>
-  /[\+\-\*\/]/.test(c);
-
-const consume = (tokens, expect) => {
-  if (tokens[0] !== expect) {
-    throw new Error(`${expect} expected, but got ${tokens[0]}.`)
-  }
-  tokens.shift();
+type TreeNode = {
+  value: string;
+  left?: TreeNode;
+  right?: TreeNode;
 };
 
-const tokenize = string => {
+function isNumber(c: string): boolean {
+  return /^\d+$/.test(c);
+}
+
+function isSpace(c: string): boolean {
+  return c === ' ';
+}
+
+function isOperator(c: string): boolean {
+  return /^[\+\-\*\/]$/.test(c);
+}
+
+function consume(tokens: string[], expect: string) {
+  if (tokens[0] !== expect) {
+    throw new Error(`${expect} expected, but got ${tokens[0]}.`);
+  }
+  tokens.shift();
+}
+
+function tokenize(str: string): string[] {
   let temp = '';
   const tokens = [];
-  for (const c of string) {
+  for (const c of str) {
     if (isNumber(c)) {
       temp += c;
       continue;
@@ -34,50 +41,50 @@ const tokenize = string => {
     tokens.push(c);
   }
   return [...tokens, temp];
-};
+}
 
-const number = tokens => {
+function number(tokens: string[]): TreeNode {
   if (isNumber(tokens[0])) {
-    return { value: Number(tokens.shift()) };
+    return { value: tokens.shift()! };
   }
   consume(tokens, '(');
   const node = expression(tokens);
   consume(tokens, ')');
   return node;
-};
+}
 
-const term = tokens => {
+function term(tokens: string[]): TreeNode {
   let node = number(tokens);
   while (true) {
     switch (tokens[0]) {
-    case '*':
-    case '/':
-      node = { value: tokens.shift(), left: node, right: number(tokens) };
-      break;
-    default:
-      return node;
+      case '*':
+      case '/':
+        node = { value: tokens.shift()!, left: node, right: number(tokens) };
+        break;
+      default:
+        return node;
     }
   }
-};
+}
 
-const expression = tokens => {
+function expression(tokens: string[]): TreeNode {
   let node = term(tokens);
   while (true) {
     switch (tokens[0]) {
-    case '+':
-    case '-':
-      node = { value: tokens.shift(), left: node, right: term(tokens) };
-      break;
-    default:
-      return node;
+      case '+':
+      case '-':
+        node = { value: tokens.shift()!, left: node, right: term(tokens) };
+        break;
+      default:
+        return node;
     }
   }
-};
+}
 
-const printAssembly = node => {
+function printAssembly(node: TreeNode) {
   if (!node.left || !node.right) {
     console.log(`  push ${node.value}`);
-    return
+    return;
   }
 
   printAssembly(node.left);
@@ -97,7 +104,7 @@ const printAssembly = node => {
       console.log(`  imul rax, rdi`);
       break;
     case '/':
-      console.log('  cqo')
+      console.log('  cqo');
       console.log(`  idiv rdi`);
       break;
     default:
@@ -105,9 +112,9 @@ const printAssembly = node => {
   }
 
   console.log('  push rax');
-};
+}
 
-const main = argv => {
+const main = (argv: string[]) => {
   const tokens = tokenize(argv[2]);
   const node = expression(tokens);
 
@@ -121,6 +128,4 @@ const main = argv => {
   console.log('  ret');
 };
 
-if (require.main === module) {
-  main(process.argv);
-}
+main(process.argv);

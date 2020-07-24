@@ -1,21 +1,27 @@
 {
-  "name": "calc",
+  "name": "calculator",
   "version": "1.0.0",
   "description": "",
   "main": "calc.js",
   "scripts": {
+    "compile": "tsc",
     "test": "./test.sh",
     "clean": "rm -f calc tmp*"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nyalloc/calculator.git"
+    "url": "git+https://github.com/dqn/calculator.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nyalloc/calculator/issues"
+    "url": "https://github.com/dqn/calculator/issues"
   },
-  "homepage": "https://github.com/nyalloc/calculator#readme"
+  "homepage": "https://github.com/dqn/calculator#readme",
+  "devDependencies": {
+    "@types/node": "^14.0.26",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
 }
