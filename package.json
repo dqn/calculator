@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/dqn/calculator#readme",
   "devDependencies": {
-    "@types/node": "^14.0.26",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "@types/node": "14.0.26",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.7"
   }
 }
